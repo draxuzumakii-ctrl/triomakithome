@@ -1,0 +1,1967 @@
+
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRIOMA HOME KIT — Smart Home Ecosystem & Web Business Presentation</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for Live Energy Monitor -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            obsidian: '#080B0A',
+            charcoal: '#111816',
+            forest: '#102B20',
+            emeraldBrand: '#10B981',
+            mint: '#6EE7B7',
+            crispWhite: '#F5F7F6',
+            mutedGray: '#929D98',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --obsidian: #080B0A;
+      --charcoal: #111816;
+      --forest: #102B20;
+      --emerald: #10B981;
+      --mint: #6EE7B7;
+    }
+
+    body {
+      background-color: var(--obsidian);
+      color: #F5F7F6;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Subtle Film Noise Layer */
+    .noise-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 99;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* iOS 26 Liquid Glass Surface */
+    .liquid-glass {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.075) 0%, rgba(16, 43, 32, 0.24) 100%);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      border: 1px solid rgba(16, 185, 129, 0.26);
+      box-shadow:
+        0 10px 40px -10px rgba(0, 0, 0, 0.65),
+        inset 0 1px 1px rgba(255, 255, 255, 0.16);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .liquid-glass::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 75%;
+      height: 100%;
+      background: linear-gradient(
+        115deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.07) 45%,
+        rgba(110, 231, 183, 0.12) 50%,
+        transparent 100%
+      );
+      transform: skewX(-20deg);
+      transition: left 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    .liquid-glass:hover::before {
+      left: 150%;
+    }
+
+    .liquid-glass-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(110, 231, 183, 0.55);
+      box-shadow:
+        0 18px 48px -12px rgba(16, 185, 129, 0.24),
+        inset 0 1px 1px rgba(255, 255, 255, 0.24);
+    }
+
+    /* Emerald Ambient Mesh & Tech Grid */
+    .emerald-mesh-bg {
+      background-image:
+        radial-gradient(circle at 18% 15%, rgba(16, 185, 129, 0.17) 0%, transparent 42%),
+        radial-gradient(circle at 82% 28%, rgba(16, 43, 32, 0.58) 0%, transparent 48%),
+        radial-gradient(circle at 50% 85%, rgba(110, 231, 183, 0.09) 0%, transparent 45%);
+    }
+
+    .tech-grid {
+      background-size: 48px 48px;
+      background-image:
+        linear-gradient(to right, rgba(16, 185, 129, 0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(16, 185, 129, 0.045) 1px, transparent 1px);
+    }
+
+    /* Liquid Toggle Switch */
+    .liquid-toggle {
+      width: 58px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.35s ease;
+      flex-shrink: 0;
+    }
+
+    .liquid-toggle-knob {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: #929D98;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.25s ease, background 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    }
+
+    .liquid-toggle:active .liquid-toggle-knob {
+      width: 30px;
+    }
+
+    .liquid-toggle.active {
+      background: linear-gradient(135deg, #10B981, #059669);
+      border-color: #6EE7B7;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.45);
+    }
+
+    .liquid-toggle.active .liquid-toggle-knob {
+      transform: translateX(26px);
+      background: #F5F7F6;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-9px) rotate(0.5deg); }
+    }
+    .animate-float {
+      animation: floatSlow 6s ease-in-out infinite;
+    }
+
+    @keyframes packetFlow {
+      0% { stroke-dashoffset: 48; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .data-stream-line {
+      stroke-dasharray: 6 6;
+      animation: packetFlow 1.4s linear infinite;
+    }
+
+    @keyframes alertRing {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); border-color: rgba(239, 68, 68, 0.8); }
+      50% { box-shadow: 0 0 28px 4px rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.35); }
+    }
+    .security-alert-pulse {
+      animation: alertRing 1.2s infinite;
+    }
+
+    /* Scroll Reveal */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #080B0A; }
+    ::-webkit-scrollbar-thumb { background: #102B20; border-radius: 9999px; border: 1px solid rgba(16, 185, 129, 0.35); }
+    ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+  </style>
+</head>
+<body class="bg-obsidian text-crispWhite antialiased selection:bg-emeraldBrand selection:text-obsidian">
+
+  <div class="noise-overlay"></div>
+  <canvas id="particle-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-55"></canvas>
+  <div id="toast-stack" class="fixed bottom-5 right-5 z-[110] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- =========================================================================
+       1. FLOATING LIQUID GLASS NAVBAR (DESKTOP & MOBILE)
+  ========================================================================== -->
+  <header class="sticky top-0 z-50 px-3 sm:px-6 pt-3 pb-2 transition-all duration-300">
+    <div class="max-w-7xl mx-auto rounded-2xl liquid-glass px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      
+      <!-- Brand Logo -->
+      <a href="#home" class="flex items-center gap-3 shrink-0 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emeraldBrand/30 to-forest border border-emeraldBrand/60 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-105 transition">
+          <svg class="w-6 h-6 text-mint" viewBox="0 0 48 48" fill="none">
+            <path d="M24 5L6 19V42H18V29H30V42H42V19L24 5Z" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>
+            <circle cx="24" cy="19" r="3.5" fill="#10B981"/>
+            <path d="M15.5 13.5C18 11.4 20.9 10.3 24 10.3C27.1 10.3 30 11.4 32.5 13.5" stroke="#6EE7B7" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-extrabold tracking-tight text-crispWhite text-sm sm:text-base block leading-none">
+            TRIOMA <span class="text-emeraldBrand">HOME KIT</span>
+          </span>
+          <span class="text-[10px] font-mono text-mint/85 tracking-wider uppercase block mt-0.5">
+            Smart Home & Web Business
+          </span>
+        </div>
+      </a>
+
+      <!-- Center Desktop Nav -->
+      <nav class="hidden xl:flex items-center gap-1 bg-obsidian/55 px-2 py-1.5 rounded-xl border border-white/10">
+        <a href="#home" data-section="home" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold text-obsidian bg-emeraldBrand transition">Home</a>
+        <a href="#products" data-section="products" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-medium text-mutedGray hover:text-crispWhite transition">TRIOMA Kit</a>
+        <a href="#live-demo" data-section="live-demo" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-medium text-mutedGray hover:text-crispWhite transition">Live Dashboard</a>
+        <a href="#web-services" data-section="web-services" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-medium text-mutedGray hover:text-crispWhite transition">Jenis & Harga Web</a>
+        <a href="#marketing-4p" data-section="marketing-4p" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-medium text-mutedGray hover:text-crispWhite transition">Marketing 4P & Simulasi</a>
+        <a href="#contact" data-section="contact" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-medium text-mutedGray hover:text-crispWhite transition">Contact</a>
+      </nav>
+
+      <!-- Right: Presentation Mode & Mobile Menu -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="openPresentationMode(0)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emeraldBrand hover:bg-mint text-obsidian font-extrabold text-xs shadow-[0_0_20px_rgba(16,185,129,0.4)] transition cursor-pointer">
+          <i data-lucide="presentation" class="w-4 h-4"></i>
+          <span>Presentation Mode</span>
+        </button>
+
+        <button onclick="toggleMobileDrawer()" aria-label="Menu" class="xl:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-crispWhite hover:text-mint cursor-pointer">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-drawer" class="hidden xl:hidden max-w-7xl mx-auto mt-2 rounded-2xl liquid-glass p-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-semibold">
+        <a href="#home" onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-obsidian/70 hover:text-mint border border-white/5">01. Home</a>
+        <a href="#products" onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-obsidian/70 hover:text-mint border border-white/5">02. Produk TRIOMA</a>
+        <a href="#live-demo" onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-emeraldBrand/15 text-mint border border-emeraldBrand/30">03. Live Dashboard</a>
+        <a href="#web-services" onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-obsidian/70 hover:text-mint border border-white/5">04. Jenis & Harga Web</a>
+        <a href="#marketing-4p" onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-obsidian/70 hover:text-mint border border-white/5">05. Marketing 4P & Omzet</a>
+        <a href="#contact" onclick="toggleMobileDrawer()" class="p-2.5 rounded-xl bg-obsidian/70 hover:text-mint border border-white/5">06. Contact & Order</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10">
+
+    <!-- =========================================================================
+         2. HERO SECTION — 'SMARTER LIVING. SIMPLER FUTURE.' + ESP32-S3 HUB
+    ========================================================================== -->
+    <section id="home" class="relative min-h-[88vh] flex items-center emerald-mesh-bg tech-grid pt-8 pb-20 border-b border-emeraldBrand/15">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <!-- Left Copy -->
+          <div class="lg:col-span-6 space-y-6">
+            <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full liquid-glass text-xs font-mono tracking-wider text-mint">
+              <span class="w-2 h-2 rounded-full bg-emeraldBrand animate-ping"></span>
+              <span>LIVE PRODUCT SHOWCASE & DIGITAL WEB BUSINESS</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-crispWhite leading-[1.06]">
+              SMARTER LIVING. <br />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-emeraldBrand via-mint to-emerald-300">
+                SIMPLER FUTURE.
+              </span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-mutedGray max-w-xl leading-relaxed">
+              Ekosistem rumah pintar <strong class="text-crispWhite">TRIOMA HOME KIT</strong> berbasis <strong class="text-mint">ESP32-S3</strong>, Wi-Fi, dan modul Zigbee — sekaligus menjadi <strong class="text-crispWhite">bukti nyata produk website</strong> yang kami rancang dan pasarkan untuk bisnis digital Anda.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-3.5 pt-2">
+              <a href="#live-demo" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-emeraldBrand hover:bg-mint text-obsidian font-extrabold text-sm shadow-[0_0_28px_rgba(16,185,129,0.45)] transition">
+                <i data-lucide="cpu" class="w-4 h-4"></i>
+                <span>Coba Live Dashboard</span>
+              </a>
+
+              <a href="#web-services" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl liquid-glass hover:border-mint text-crispWhite font-bold text-sm transition">
+                <i data-lucide="globe" class="w-4 h-4 text-emeraldBrand"></i>
+                <span>Lihat Jenis & Harga Web</span>
+              </a>
+            </div>
+
+            <!-- Highlights -->
+            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-lg">
+              <div>
+                <span class="text-xl sm:text-2xl font-extrabold text-crispWhite font-mono">3-in-1</span>
+                <p class="text-xs text-mutedGray mt-0.5">Satu Jaringan, Tiga Fungsi</p>
+              </div>
+              <div>
+                <span class="text-xl sm:text-2xl font-extrabold text-mint font-mono">5 Jenis</span>
+                <p class="text-xs text-mutedGray mt-0.5">Produk Website Dijual</p>
+              </div>
+              <div>
+                <span class="text-xl sm:text-2xl font-extrabold text-crispWhite font-mono">4P + Sim</span>
+                <p class="text-xs text-mutedGray mt-0.5">Strategi & Kalkulator</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Interactive ESP32-S3 Smart Home Hub Visual -->
+          <div class="lg:col-span-6">
+            <div class="liquid-glass rounded-3xl p-6 sm:p-8 animate-float">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emeraldBrand"></span>
+                  <span class="text-xs font-mono text-mint uppercase tracking-wider">Interactive ESP32-S3 Core Hub</span>
+                </div>
+                <button onclick="triggerHubPing()" class="px-3 py-1 rounded-lg bg-emeraldBrand/20 hover:bg-emeraldBrand text-mint hover:text-obsidian border border-emeraldBrand/40 text-[11px] font-mono font-bold transition cursor-pointer">
+                  Ping Zigbee Mesh
+                </button>
+              </div>
+
+              <!-- Interactive Isometric SVG -->
+              <div class="relative rounded-2xl bg-obsidian/90 border border-emeraldBrand/25 p-4 overflow-hidden">
+                <svg viewBox="0 0 560 340" class="w-full h-auto" fill="none">
+                  <defs>
+                    <linearGradient id="isoFloor" x1="100" y1="150" x2="460" y2="310" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#102B20" stop-opacity="0.95"/>
+                      <stop offset="100%" stop-color="#080B0A" stop-opacity="0.98"/>
+                    </linearGradient>
+                    <radialGradient id="hubBeam" cx="0.5" cy="0.5" r="0.5">
+                      <stop offset="0%" stop-color="#10B981" stop-opacity="0.5"/>
+                      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+                    </radialGradient>
+                  </defs>
+
+                  <ellipse cx="280" cy="220" rx="195" ry="80" fill="url(#hubBeam)"/>
+                  <polygon points="280,145 460,225 280,305 100,225" fill="url(#isoFloor)" stroke="#10B981" stroke-width="1.5" stroke-opacity="0.55"/>
+                  <polygon points="100,225 100,115 280,40 280,145" fill="#133124" fill-opacity="0.65" stroke="#10B981" stroke-opacity="0.35"/>
+                  <polygon points="280,145 280,40 460,115 460,225" fill="#0E241B" fill-opacity="0.65" stroke="#10B981" stroke-opacity="0.35"/>
+
+                  <!-- Mesh Waves -->
+                  <ellipse cx="280" cy="212" rx="70" ry="30" stroke="#6EE7B7" stroke-opacity="0.5" stroke-width="1.2" class="data-stream-line"/>
+                  <ellipse cx="280" cy="212" rx="125" ry="52" stroke="#10B981" stroke-opacity="0.35" stroke-width="1.2" class="data-stream-line"/>
+
+                  <!-- Data Links -->
+                  <line x1="280" y1="208" x2="165" y2="162" stroke="#6EE7B7" stroke-width="1.8" class="data-stream-line"/>
+                  <line x1="280" y1="208" x2="395" y2="162" stroke="#6EE7B7" stroke-width="1.8" class="data-stream-line"/>
+                  <line x1="280" y1="208" x2="280" y2="275" stroke="#6EE7B7" stroke-width="1.8" class="data-stream-line"/>
+
+                  <!-- Center ESP32-S3 Hub -->
+                  <g onclick="triggerHubPing()" class="cursor-pointer">
+                    <polygon points="280,185 322,204 280,223 238,204" fill="#10B981" fill-opacity="0.3" stroke="#6EE7B7" stroke-width="2"/>
+                    <polygon points="238,204 280,223 280,238 238,219" fill="#102B20" stroke="#10B981" stroke-width="1.5"/>
+                    <polygon points="322,204 280,223 280,238 322,219" fill="#0B1D16" stroke="#10B981" stroke-width="1.5"/>
+                    <circle cx="280" cy="204" r="5" fill="#6EE7B7"/>
+                    <rect x="210" y="148" width="140" height="24" rx="8" fill="#080B0A" stroke="#10B981" stroke-width="1.2"/>
+                    <text x="280" y="164" fill="#6EE7B7" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle">ESP32-S3 + ZIGBEE</text>
+                  </g>
+
+                  <!-- Node 1: TERAS -->
+                  <g>
+                    <circle cx="165" cy="135" r="16" fill="#10B981" fill-opacity="0.2" stroke="#6EE7B7" stroke-width="1.5"/>
+                    <circle cx="165" cy="135" r="5.5" fill="#FDE047"/>
+                    <rect x="82" y="94" width="118" height="22" rx="7" fill="#111816" stroke="#10B981" stroke-opacity="0.5"/>
+                    <text x="141" y="109" fill="#F5F7F6" font-size="9.5" font-family="monospace" font-weight="bold" text-anchor="middle">TERAS • Otomatisasi</text>
+                  </g>
+
+                  <!-- Node 2: JAGA -->
+                  <g>
+                    <circle cx="395" cy="135" r="16" fill="#10B981" fill-opacity="0.2" stroke="#6EE7B7" stroke-width="1.5"/>
+                    <circle cx="395" cy="135" r="5.5" fill="#10B981"/>
+                    <rect x="352" y="94" width="124" height="22" rx="7" fill="#111816" stroke="#10B981" stroke-opacity="0.5"/>
+                    <text x="414" y="109" fill="#F5F7F6" font-size="9.5" font-family="monospace" font-weight="bold" text-anchor="middle">JAGA • Keamanan+Cam</text>
+                  </g>
+
+                  <!-- Node 3: HEMAT -->
+                  <g>
+                    <circle cx="280" cy="276" r="13" fill="#10B981" fill-opacity="0.24" stroke="#6EE7B7" stroke-width="1.5"/>
+                    <circle cx="280" cy="276" r="5" fill="#6EE7B7"/>
+                    <rect x="206" y="296" width="148" height="22" rx="7" fill="#111816" stroke="#10B981" stroke-opacity="0.5"/>
+                    <text x="280" y="311" fill="#F5F7F6" font-size="9.5" font-family="monospace" font-weight="bold" text-anchor="middle">HEMAT • Energy Monitor</text>
+                  </g>
+                </svg>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2.5 mt-4 text-xs">
+                <div class="p-3 rounded-xl bg-obsidian/75 border border-white/10 flex items-center justify-between">
+                  <span class="text-mutedGray">Core MCU</span>
+                  <span class="font-mono font-bold text-mint">ESP32-S3</span>
+                </div>
+                <div class="p-3 rounded-xl bg-obsidian/75 border border-white/10 flex items-center justify-between">
+                  <span class="text-mutedGray">Network</span>
+                  <span class="font-mono font-bold text-emeraldBrand">Wi-Fi+Zigbee</span>
+                </div>
+                <div class="p-3 rounded-xl bg-obsidian/75 border border-white/10 flex items-center justify-between">
+                  <span class="text-mutedGray">Active Mode</span>
+                  <span id="hero-mode-mirror" class="font-mono font-bold text-crispWhite">Home</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         3. KATALOG PRODUK TRIOMA HOME KIT + DETAIL PRODUK MODAL
+    ========================================================================== -->
+    <section id="products" class="py-20 bg-charcoal/55 border-b border-emeraldBrand/15 reveal-on-scroll">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+          <div>
+            <span class="text-xs font-mono uppercase tracking-widest text-mint">02 / Produk Unggulan TRIOMA Home Kit</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-crispWhite mt-2">Satu Jaringan, Tiga Fungsi</h2>
+          </div>
+          <p class="text-sm text-mutedGray max-w-md">
+            Klik <strong class="text-crispWhite">Detail Produk</strong> pada setiap perangkat untuk melihat spesifikasi teknis, fitur, dan cara kerja sistem.
+          </p>
+        </div>
+
+        <div id="products-showcase-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         4. SMART HOME LIVE DASHBOARD (SIMULATION MODE)
+    ========================================================================== -->
+    <section id="live-demo" class="py-20 border-b border-emeraldBrand/15 reveal-on-scroll">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div>
+            <span class="text-xs font-mono uppercase tracking-widest text-mint">03 / Interactive Smart Home Demo</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-crispWhite mt-2">TRIOMA Smart Home Dashboard</h2>
+            <p class="text-sm text-mutedGray mt-1">
+              Demonstrasi interaktif kontrol lampu, sensor gerak, sensor pintu, suhu/kelembapan, grafik energi, dan riwayat aktivitas.
+            </p>
+          </div>
+
+          <div class="inline-flex items-center gap-3 px-4 py-3 rounded-2xl liquid-glass border-amber-400/45 shrink-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+            <div>
+              <span class="text-xs font-mono font-bold text-amber-300 uppercase block">SIMULATION MODE</span>
+              <span class="text-[11px] text-mutedGray">Simulasi perangkat lunak (belum terhubung ke hardware fisik)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Selector (Home, Away, Night, Security) -->
+        <div class="liquid-glass rounded-3xl p-5">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-mono text-mint uppercase block">Pilihan Mode Rumah</span>
+              <p class="text-xs text-mutedGray mt-0.5">Ubah skenario otomatisasi perangkat dan status keamanan rumah secara instan:</p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button onclick="applyScenarioMode('Home')" id="scen-btn-Home" class="scen-btn px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer bg-emeraldBrand text-obsidian">
+                <i data-lucide="home" class="w-4 h-4"></i><span>Home Mode</span>
+              </button>
+              <button onclick="applyScenarioMode('Away')" id="scen-btn-Away" class="scen-btn px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer bg-obsidian/80 text-crispWhite border border-white/10">
+                <i data-lucide="plane-takeoff" class="w-4 h-4 text-mint"></i><span>Away Mode</span>
+              </button>
+              <button onclick="applyScenarioMode('Night')" id="scen-btn-Night" class="scen-btn px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer bg-obsidian/80 text-crispWhite border border-white/10">
+                <i data-lucide="moon" class="w-4 h-4 text-mint"></i><span>Night Mode</span>
+              </button>
+              <button onclick="applyScenarioMode('Security')" id="scen-btn-Security" class="scen-btn px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer bg-obsidian/80 text-crispWhite border border-white/10">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-mint"></i><span>Security Mode</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+          
+          <!-- Smart Switch Control (5 cols) -->
+          <div class="lg:col-span-5 liquid-glass rounded-3xl p-6 flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[11px] font-mono text-mint uppercase">TRIOMA TERAS • SIMULATION</span>
+                <h3 class="text-lg font-extrabold text-crispWhite">Smart Switch (Lampu & Relay)</h3>
+              </div>
+              <span id="active-devices-pill" class="px-2.5 py-1 rounded-full bg-emeraldBrand/15 text-mint font-mono text-xs font-bold">1 / 3 ON</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-2xl bg-obsidian/80 border border-white/10 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div id="icon-box-livingLight" class="w-10 h-10 rounded-xl bg-emeraldBrand/20 border border-mint/50 text-mint flex items-center justify-center">
+                    <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-sm text-crispWhite">Lampu Ruang Utama</h4>
+                    <span id="status-livingLight" class="text-xs font-mono text-mint">ON • 18W LED</span>
+                  </div>
+                </div>
+                <button onclick="toggleDeviceSwitch('livingLight')" id="toggle-livingLight" class="liquid-toggle active"><span class="liquid-toggle-knob"></span></button>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-obsidian/80 border border-white/10 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div id="icon-box-terraceLight" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-mutedGray flex items-center justify-center">
+                    <i data-lucide="lamp-ceiling" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-sm text-crispWhite">Lampu Teras Depan</h4>
+                    <span id="status-terraceLight" class="text-xs font-mono text-mutedGray">OFF • 0W Standby</span>
+                  </div>
+                </div>
+                <button onclick="toggleDeviceSwitch('terraceLight')" id="toggle-terraceLight" class="liquid-toggle"><span class="liquid-toggle-knob"></span></button>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-obsidian/80 border border-white/10 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div id="icon-box-smartAC" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-mutedGray flex items-center justify-center">
+                    <i data-lucide="wind" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-sm text-crispWhite">Smart AC Relay</h4>
+                    <span id="status-smartAC" class="text-xs font-mono text-mutedGray">OFF • 0W Standby</span>
+                  </div>
+                </div>
+                <button onclick="toggleDeviceSwitch('smartAC')" id="toggle-smartAC" class="liquid-toggle"><span class="liquid-toggle-knob"></span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Temperature & Humidity Gauges (4 cols) -->
+          <div class="lg:col-span-4 liquid-glass rounded-3xl p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <span class="text-[11px] font-mono text-mint uppercase">TRIOMA HEMAT • SIMULATION</span>
+              <h3 class="text-lg font-extrabold text-crispWhite">Gauge Suhu & Kelembapan</h3>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 my-auto">
+              <div class="p-3.5 rounded-2xl bg-obsidian/80 border border-white/10 flex flex-col items-center">
+                <div class="relative w-24 h-24 flex items-center justify-center">
+                  <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.08)" stroke-width="8" fill="none"/>
+                    <circle id="temp-gauge-arc" cx="50" cy="50" r="40" stroke="#10B981" stroke-width="8" stroke-linecap="round" fill="none" stroke-dasharray="251.2" stroke-dashoffset="110" class="transition-all duration-500"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span id="temp-value-text" class="text-lg font-extrabold font-mono text-crispWhite">24.5°</span>
+                    <span class="text-[9px] font-mono text-mint">SUHU</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-obsidian/80 border border-white/10 flex flex-col items-center">
+                <div class="relative w-24 h-24 flex items-center justify-center">
+                  <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.08)" stroke-width="8" fill="none"/>
+                    <circle id="humidity-ring-arc" cx="50" cy="50" r="40" stroke="#6EE7B7" stroke-width="8" stroke-linecap="round" fill="none" stroke-dasharray="251.2" stroke-dashoffset="95" class="transition-all duration-500"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span id="humidity-value-text" class="text-lg font-extrabold font-mono text-crispWhite">62%</span>
+                    <span class="text-[9px] font-mono text-mint">RH</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-2xl bg-obsidian/80 border border-white/10 flex items-center justify-between text-xs">
+              <span class="text-mutedGray">Ubah Suhu Simulasi:</span>
+              <div class="flex gap-2">
+                <button onclick="adjustSimulatedTemp(-1.5)" class="px-2.5 py-1 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian text-mint font-mono font-bold cursor-pointer">-1.5°</button>
+                <button onclick="adjustSimulatedTemp(1.5)" class="px-2.5 py-1 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian text-mint font-mono font-bold cursor-pointer">+1.5°</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Motion Sensor & Door Sensor Cards (3 cols) -->
+          <div class="lg:col-span-3 flex flex-col gap-5">
+            <div id="motion-sensor-card" class="liquid-glass rounded-3xl p-5 flex-1 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-mint">MOTION SENSOR</span>
+                <span id="motion-badge" class="px-2 py-0.5 rounded-full bg-emeraldBrand/15 text-mint text-[10px] font-mono font-bold">CLEAR</span>
+              </div>
+              <p id="motion-desc" class="text-xs text-mutedGray my-2">Tidak ada gerakan terdeteksi.</p>
+              <button onclick="simulateMotionTrigger()" class="w-full py-2 px-3 rounded-xl bg-emeraldBrand/15 hover:bg-emeraldBrand text-mint hover:text-obsidian border border-emeraldBrand/40 font-bold text-xs transition cursor-pointer">
+                Simulasi Sensor Gerak
+              </button>
+            </div>
+
+            <div id="door-sensor-card" class="liquid-glass rounded-3xl p-5 flex-1 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-mint">DOOR SENSOR</span>
+                <span id="door-badge" class="px-2 py-0.5 rounded-full bg-emeraldBrand/15 text-mint text-[10px] font-mono font-bold">LOCKED</span>
+              </div>
+              <p id="door-desc" class="text-xs text-mutedGray my-2">Pintu utama terkunci aman.</p>
+              <button onclick="toggleSimulatedDoor()" id="door-sim-btn" class="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-emeraldBrand text-crispWhite hover:text-obsidian border border-white/15 font-bold text-xs transition cursor-pointer">
+                Simulasi Pintu Terbuka
+              </button>
+            </div>
+          </div>
+
+          <!-- Energy Monitor Real-Time Chart (7 cols) -->
+          <div class="lg:col-span-7 liquid-glass rounded-3xl p-6">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <span class="text-[11px] font-mono text-mint uppercase">TRIOMA HEMAT • REAL-TIME TELEMETRY</span>
+                <h3 class="text-lg font-extrabold text-crispWhite">Grafik Monitoring Energi (Watt)</h3>
+              </div>
+              <span id="live-watt-counter" class="px-3 py-1 rounded-xl bg-obsidian/90 border border-emeraldBrand/40 font-mono font-extrabold text-mint text-sm">42 W</span>
+            </div>
+            <div class="h-52 w-full bg-obsidian/75 rounded-2xl p-3 border border-white/10">
+              <canvas id="energyMonitorChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Activity History (5 cols) -->
+          <div class="lg:col-span-5 liquid-glass rounded-3xl p-6">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <span class="text-[11px] font-mono text-mint uppercase">LOG SISTEM</span>
+                <h3 class="text-lg font-extrabold text-crispWhite">Activity History</h3>
+              </div>
+              <button onclick="clearTimelineLogs()" class="text-xs font-mono text-mutedGray hover:text-mint cursor-pointer">Clear</button>
+            </div>
+            <div id="timeline-feed" class="h-52 overflow-y-auto space-y-2 pr-1"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         5. PEMASARAN JASA PEMBUATAN WEBSITE: 5 JENIS WEB & HARGA PER PAKET
+    ========================================================================== -->
+    <section id="web-services" class="py-20 bg-charcoal/55 border-b border-emeraldBrand/15 reveal-on-scroll">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+        
+        <!-- Header -->
+        <div class="max-w-3xl">
+          <span class="text-xs font-mono uppercase tracking-widest text-mint">04 / Pemasaran Produk & Jasa Pembuatan Website</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-crispWhite mt-2 leading-tight">
+            Website Ini Adalah <span class="text-emeraldBrand">Produk Nyata Kami.</span>
+          </h2>
+          <p class="text-sm sm:text-base text-mutedGray mt-3 leading-relaxed">
+            Selain merancang ekosistem smart home <strong class="text-crispWhite">TRIOMA HOME KIT</strong>, kami membuka layanan jasa pembuatan website profesional. Website TRIOMA yang sedang Anda buka dan simulasikan sekarang adalah <strong class="text-mint">portofolio produk unggulan</strong> dari layanan web development kami.
+          </p>
+        </div>
+
+        <!-- 5 Jenis Website yang Dijual (Interactive Explorer) -->
+        <div class="space-y-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl sm:text-2xl font-extrabold text-crispWhite">5 Jenis Website yang Kami Jual</h3>
+            <span class="text-xs font-mono text-mint hidden sm:inline">Klik kartu untuk detail & rekomendasi paket</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Jenis 1: Personal Portfolio -->
+            <div onclick="highlightWebType('portfolio')" id="wtype-portfolio" class="wtype-card liquid-glass liquid-glass-hover rounded-2xl p-5 cursor-pointer border-emeraldBrand/30">
+              <div class="w-10 h-10 rounded-xl bg-emeraldBrand/15 text-mint flex items-center justify-center mb-3">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
+              </div>
+              <span class="text-[10px] font-mono text-mint uppercase">01 • PERSONAL BRAND</span>
+              <h4 class="font-extrabold text-crispWhite text-base mt-1">Personal Portfolio</h4>
+              <p class="text-xs text-mutedGray mt-1.5 leading-relaxed">CV digital, galeri karya desainer, fotografer, freelancer, maupun profil kreator.</p>
+              <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-mono text-emeraldBrand">
+                Rekomendasi: Paket Basic
+              </div>
+            </div>
+
+            <!-- Jenis 2: Company Profile -->
+            <div onclick="highlightWebType('company')" id="wtype-company" class="wtype-card liquid-glass liquid-glass-hover rounded-2xl p-5 cursor-pointer border-emeraldBrand/30">
+              <div class="w-10 h-10 rounded-xl bg-emeraldBrand/15 text-mint flex items-center justify-center mb-3">
+                <i data-lucide="building-2" class="w-5 h-5"></i>
+              </div>
+              <span class="text-[10px] font-mono text-mint uppercase">02 • CORPORATE</span>
+              <h4 class="font-extrabold text-crispWhite text-base mt-1">Company Profile</h4>
+              <p class="text-xs text-mutedGray mt-1.5 leading-relaxed">Profil perusahaan, UMKM, katalog layanan jasa, visi misi, dan tombol konsultasi WhatsApp.</p>
+              <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-mono text-emeraldBrand">
+                Rekomendasi: Paket Standard
+              </div>
+            </div>
+
+            <!-- Jenis 3: School Website -->
+            <div onclick="highlightWebType('school')" id="wtype-school" class="wtype-card liquid-glass liquid-glass-hover rounded-2xl p-5 cursor-pointer border-emeraldBrand/30">
+              <div class="w-10 h-10 rounded-xl bg-emeraldBrand/15 text-mint flex items-center justify-center mb-3">
+                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+              </div>
+              <span class="text-[10px] font-mono text-mint uppercase">03 • EDUCATION</span>
+              <h4 class="font-extrabold text-crispWhite text-base mt-1">School Website</h4>
+              <p class="text-xs text-mutedGray mt-1.5 leading-relaxed">Portal profil sekolah, informasi PPDB online, berita prestasi siswa, dan galeri kegiatan.</p>
+              <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-mono text-emeraldBrand">
+                Rekomendasi: Paket Standard
+              </div>
+            </div>
+
+            <!-- Jenis 4: E-Commerce -->
+            <div onclick="highlightWebType('ecommerce')" id="wtype-ecommerce" class="wtype-card liquid-glass liquid-glass-hover rounded-2xl p-5 cursor-pointer border-emeraldBrand/30">
+              <div class="w-10 h-10 rounded-xl bg-emeraldBrand/15 text-mint flex items-center justify-center mb-3">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+              </div>
+              <span class="text-[10px] font-mono text-mint uppercase">04 • ONLINE STORE</span>
+              <h4 class="font-extrabold text-crispWhite text-base mt-1">E-Commerce</h4>
+              <p class="text-xs text-mutedGray mt-1.5 leading-relaxed">Toko online lengkap dengan katalog produk, keranjang belanja, hitung ongkir & checkout.</p>
+              <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-mono text-emeraldBrand">
+                Rekomendasi: Paket Premium
+              </div>
+            </div>
+
+            <!-- Jenis 5: Custom Smart Home / IoT Web App (TRIOMA) -->
+            <div onclick="highlightWebType('iot')" id="wtype-iot" class="wtype-card liquid-glass liquid-glass-hover rounded-2xl p-5 cursor-pointer border-2 border-emeraldBrand bg-forest/40">
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-emeraldBrand text-obsidian flex items-center justify-center">
+                  <i data-lucide="cpu" class="w-5 h-5"></i>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-emeraldBrand text-obsidian font-mono font-extrabold text-[9px]">CONTOH NYATA</span>
+              </div>
+              <span class="text-[10px] font-mono text-mint uppercase">05 • WEB APP / IOT</span>
+              <h4 class="font-extrabold text-crispWhite text-base mt-1">Custom Smart Home / IoT Web</h4>
+              <p class="text-xs text-crispWhite/85 mt-1.5 leading-relaxed">Dashboard kontrol perangkat, simulasi interaktif & showcase produk seperti <strong class="text-mint">TRIOMA</strong> ini.</p>
+              <div class="mt-3 pt-2.5 border-t border-white/10 text-[11px] font-mono text-mint font-bold">
+                Rekomendasi: Paket Premium
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Explanation Box for Selected Website Type -->
+          <div id="web-type-detail-box" class="liquid-glass rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-emeraldBrand/40">
+            <div>
+              <span class="text-[11px] font-mono text-mint uppercase">PENJELASAN PRODUK WEBSITE</span>
+              <h4 id="wtype-detail-title" class="text-lg font-extrabold text-crispWhite mt-0.5">Custom Smart Home / IoT Web App (Studi Kasus: TRIOMA HOME KIT)</h4>
+              <p id="wtype-detail-desc" class="text-xs sm:text-sm text-mutedGray mt-1">
+                Website interaktif tingkat lanjut yang menggabungkan katalog produk, simulasi dashboard perangkat keras (ESP32-S3), grafik real-time, dan alur transaksi dalam satu platform modern.
+              </p>
+            </div>
+            <a href="#web-pricing" class="px-4 py-2.5 rounded-xl bg-emeraldBrand text-obsidian font-extrabold text-xs shrink-0 text-center">
+              Lihat Paket Harga
+            </a>
+          </div>
+        </div>
+
+        <!-- Daftar Harga Web Per Paket Sesuai Jenisnya -->
+        <div id="web-pricing" class="space-y-6 pt-4">
+          <div class="text-center max-w-2xl mx-auto">
+            <span class="text-xs font-mono uppercase tracking-widest text-mint">Daftar Harga Pembuatan Website</span>
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-crispWhite mt-1">Paket Harga Web Sesuai Jenisnya</h3>
+            <p class="text-xs sm:text-sm text-mutedGray mt-2">Pilih paket pembuatan website sesuai skala kebutuhan dan jenis bisnis Anda.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            
+            <!-- PAKET BASIC -->
+            <div class="liquid-glass liquid-glass-hover rounded-3xl p-7 flex flex-col justify-between">
+              <div>
+                <span class="px-3 py-1 rounded-full bg-emeraldBrand/15 text-mint text-xs font-mono font-bold">PAKET BASIC</span>
+                <div class="mt-4 flex items-baseline gap-1">
+                  <span class="text-3xl sm:text-4xl font-extrabold font-mono text-mint">Rp250.000</span>
+                </div>
+                <p class="text-xs font-semibold text-crispWhite mt-2">Cocok untuk: <span class="text-emeraldBrand">Personal Portfolio & Landing Page</span></p>
+                <p class="text-xs text-mutedGray mt-1.5">Solusi cepat dan elegan untuk membangun identitas digital pribadi atau promosi satu produk.</p>
+
+                <ul class="mt-5 space-y-2.5 text-xs text-crispWhite/90 border-t border-white/10 pt-4">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Desain 1–3 Halaman Responsif (HP & Laptop)</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Galeri Karya & Profil Diri</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Tombol Direct Chat WhatsApp</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Revisi Desain 2x</li>
+                </ul>
+              </div>
+              <button onclick="orderWebPackage('Paket Website BASIC — Rp250.000 (Personal Portfolio)')" class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-emeraldBrand text-crispWhite hover:text-obsidian font-bold text-xs transition cursor-pointer">
+                Pesan Paket Basic
+              </button>
+            </div>
+
+            <!-- PAKET STANDARD -->
+            <div class="liquid-glass liquid-glass-hover rounded-3xl p-7 flex flex-col justify-between border-2 border-emeraldBrand shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full bg-emeraldBrand text-obsidian text-xs font-mono font-extrabold">PAKET STANDARD</span>
+                  <span class="text-[11px] font-mono text-mint font-bold">TERLARIS</span>
+                </div>
+                <div class="mt-4 flex items-baseline gap-1">
+                  <span class="text-3xl sm:text-4xl font-extrabold font-mono text-mint">Rp500.000</span>
+                </div>
+                <p class="text-xs font-semibold text-crispWhite mt-2">Cocok untuk: <span class="text-emeraldBrand">Company Profile & School Website</span></p>
+                <p class="text-xs text-mutedGray mt-1.5">Tampilan profesional multi-halaman untuk meningkatkan kredibilitas perusahaan, UMKM, maupun sekolah.</p>
+
+                <ul class="mt-5 space-y-2.5 text-xs text-crispWhite/90 border-t border-white/10 pt-4">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Hingga 6 Halaman Lengkap & Terstruktur</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Katalog Layanan, Berita & Form PPDB/Kontak</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Optimasi SEO Dasar & Kecepatan Akses</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Integrasi Google Maps & Media Sosial</li>
+                </ul>
+              </div>
+              <button onclick="orderWebPackage('Paket Website STANDARD — Rp500.000 (Company Profile / School)')" class="mt-6 w-full py-3 rounded-xl bg-emeraldBrand hover:bg-mint text-obsidian font-extrabold text-xs transition cursor-pointer">
+                Pesan Paket Standard
+              </button>
+            </div>
+
+            <!-- PAKET PREMIUM -->
+            <div class="liquid-glass liquid-glass-hover rounded-3xl p-7 flex flex-col justify-between bg-gradient-to-b from-forest/55 to-obsidian/90">
+              <div>
+                <span class="px-3 py-1 rounded-full bg-mint/20 text-mint text-xs font-mono font-bold">PAKET PREMIUM</span>
+                <div class="mt-4 flex items-baseline gap-1">
+                  <span class="text-3xl sm:text-4xl font-extrabold font-mono text-mint">Rp1.000.000</span>
+                </div>
+                <p class="text-xs font-semibold text-crispWhite mt-2">Cocok untuk: <span class="text-emeraldBrand">E-Commerce & Custom Smart Home/IoT Web</span></p>
+                <p class="text-xs text-mutedGray mt-1.5">Fitur interaktif penuh seperti toko online atau dashboard kontrol pintar sekelas <strong class="text-crispWhite">TRIOMA HOME KIT</strong>.</p>
+
+                <ul class="mt-5 space-y-2.5 text-xs text-crispWhite/90 border-t border-white/10 pt-4">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Katalog Produk, Keranjang / Simulasi Interaktif</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> UI/UX Custom Liquid Glass & Grafik Real-time</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Sistem Checkout WhatsApp / Payment Gateway</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emeraldBrand"></i> Full Maintenance & Prioritas Support</li>
+                </ul>
+              </div>
+              <button onclick="orderWebPackage('Paket Website PREMIUM — Rp1.000.000 (E-Commerce / Custom IoT Web)')" class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-emeraldBrand text-crispWhite hover:text-obsidian font-bold text-xs transition cursor-pointer">
+                Pesan Paket Premium
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         6. STRATEGI PEMASARAN 4P INTERAKTIF & KALKULATOR SIMULASI PENDAPATAN
+    ========================================================================== -->
+    <section id="marketing-4p" class="py-20 border-b border-emeraldBrand/15 reveal-on-scroll">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-mint">05 / Marketing Strategy Simulator</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-crispWhite mt-2">Marketing Mix 4P & Simulasi Pendapatan</h2>
+          <p class="text-sm text-mutedGray mt-1.5 max-w-2xl">
+            Klik kartu <strong class="text-crispWhite">Product, Price, Place, Promotion</strong> untuk melihat strategi pemasaran jasa pembuatan website dengan demo produk TRIOMA, lalu ubah jumlah pesanan pada kalkulator pendapatan di bawah.
+          </p>
+        </div>
+
+        <!-- 4P Interactive Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <button onclick="select4PCard('product')" id="card-4p-product" class="p4-card liquid-glass rounded-3xl p-6 text-left border-2 border-emeraldBrand bg-forest/40 cursor-pointer">
+            <span class="text-xs font-mono text-mint font-bold">01 • PRODUCT</span>
+            <h3 class="text-2xl font-extrabold text-crispWhite mt-1">Product</h3>
+            <p class="text-xs text-mutedGray mt-2">Personal Portfolio, Company Profile, School Website, E-Commerce & TRIOMA Smart Web.</p>
+          </button>
+
+          <button onclick="select4PCard('price')" id="card-4p-price" class="p4-card liquid-glass rounded-3xl p-6 text-left border border-white/15 hover:border-mint cursor-pointer">
+            <span class="text-xs font-mono text-mint font-bold">02 • PRICE</span>
+            <h3 class="text-2xl font-extrabold text-crispWhite mt-1">Price</h3>
+            <p class="text-xs text-mutedGray mt-2">Tiered Pricing terjangkau: Basic Rp250rb, Standard Rp500rb, Premium Rp1jt.</p>
+          </button>
+
+          <button onclick="select4PCard('place')" id="card-4p-place" class="p4-card liquid-glass rounded-3xl p-6 text-left border border-white/15 hover:border-mint cursor-pointer">
+            <span class="text-xs font-mono text-mint font-bold">03 • PLACE</span>
+            <h3 class="text-2xl font-extrabold text-crispWhite mt-1">Place</h3>
+            <p class="text-xs text-mutedGray mt-2">Website Resmi TRIOMA, WhatsApp (085808760688), Instagram, TikTok & Facebook.</p>
+          </button>
+
+          <button onclick="select4PCard('promotion')" id="card-4p-promotion" class="p4-card liquid-glass rounded-3xl p-6 text-left border border-white/15 hover:border-mint cursor-pointer">
+            <span class="text-xs font-mono text-mint font-bold">04 • PROMOTION</span>
+            <h3 class="text-2xl font-extrabold text-crispWhite mt-1">Promotion</h3>
+            <p class="text-xs text-mutedGray mt-2">Live Demo Produk TRIOMA, video simulasi, poster promo, diskon bundling & testimoni.</p>
+          </button>
+        </div>
+
+        <!-- 4P Detail Explanation Panel -->
+        <div id="p4-detail-panel" class="liquid-glass rounded-3xl p-6 border border-emeraldBrand/40"></div>
+
+        <!-- Kalkulator Simulasi Pendapatan Otomatis -->
+        <div class="liquid-glass rounded-3xl p-6 sm:p-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div>
+              <span class="text-xs font-mono text-mint uppercase">FINANCIAL PROJECTION SIMULATOR</span>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-crispWhite mt-0.5">Simulasi Pendapatan Penjualan Website</h3>
+              <p class="text-xs text-mutedGray mt-1">Ubah jumlah pesanan tiap paket (Default studi kasus: Basic 4, Standard 3, Premium 1 = Rp3.500.000).</p>
+            </div>
+            <button onclick="resetRevenueCalc()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-emeraldBrand hover:text-obsidian text-xs font-mono font-bold transition cursor-pointer self-start">
+              Reset Default (4-3-1)
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Basic Input -->
+            <div class="p-5 rounded-2xl bg-obsidian/80 border border-white/10 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-crispWhite text-sm">Paket Basic</span>
+                <span class="font-mono text-xs text-mint">Rp250.000 / web</span>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs text-mutedGray">Jumlah Pesanan:</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="changeQty('basic', -1)" class="w-8 h-8 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian font-bold cursor-pointer">-</button>
+                  <input type="number" id="qty-basic" value="4" min="0" oninput="recalcRevenue()" class="w-14 text-center py-1 rounded-lg bg-charcoal border border-white/15 font-mono font-bold text-crispWhite">
+                  <button onclick="changeQty('basic', 1)" class="w-8 h-8 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian font-bold cursor-pointer">+</button>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+                <span class="text-mutedGray">Subtotal Basic:</span>
+                <span id="sub-basic" class="font-mono font-extrabold text-crispWhite">Rp1.000.000</span>
+              </div>
+            </div>
+
+            <!-- Standard Input -->
+            <div class="p-5 rounded-2xl bg-obsidian/80 border border-white/10 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-crispWhite text-sm">Paket Standard</span>
+                <span class="font-mono text-xs text-mint">Rp500.000 / web</span>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs text-mutedGray">Jumlah Pesanan:</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="changeQty('standard', -1)" class="w-8 h-8 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian font-bold cursor-pointer">-</button>
+                  <input type="number" id="qty-standard" value="3" min="0" oninput="recalcRevenue()" class="w-14 text-center py-1 rounded-lg bg-charcoal border border-white/15 font-mono font-bold text-crispWhite">
+                  <button onclick="changeQty('standard', 1)" class="w-8 h-8 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian font-bold cursor-pointer">+</button>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+                <span class="text-mutedGray">Subtotal Standard:</span>
+                <span id="sub-standard" class="font-mono font-extrabold text-crispWhite">Rp1.500.000</span>
+              </div>
+            </div>
+
+            <!-- Premium Input -->
+            <div class="p-5 rounded-2xl bg-obsidian/80 border border-white/10 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-crispWhite text-sm">Paket Premium</span>
+                <span class="font-mono text-xs text-mint">Rp1.000.000 / web</span>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs text-mutedGray">Jumlah Pesanan:</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="changeQty('premium', -1)" class="w-8 h-8 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian font-bold cursor-pointer">-</button>
+                  <input type="number" id="qty-premium" value="1" min="0" oninput="recalcRevenue()" class="w-14 text-center py-1 rounded-lg bg-charcoal border border-white/15 font-mono font-bold text-crispWhite">
+                  <button onclick="changeQty('premium', 1)" class="w-8 h-8 rounded-lg bg-forest hover:bg-emeraldBrand hover:text-obsidian font-bold cursor-pointer">+</button>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+                <span class="text-mutedGray">Subtotal Premium:</span>
+                <span id="sub-premium" class="font-mono font-extrabold text-crispWhite">Rp1.000.000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Summary Bar -->
+          <div class="p-5 rounded-2xl bg-gradient-to-r from-forest to-obsidian border border-emeraldBrand/50 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-mono text-mint uppercase block">TOTAL PROYEKSI PENDAPATAN</span>
+              <span class="text-xs text-mutedGray">Total Pesanan Aktif: <strong id="total-orders-count" class="text-crispWhite font-mono">8 Website</strong></span>
+            </div>
+            <div class="text-right">
+              <span id="total-revenue-display" class="text-3xl sm:text-4xl font-extrabold font-mono text-emeraldBrand">Rp3.500.000</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         8. CONTACT SECTION (WHATSAPP 085808760688 & EMAIL ryedzoffc@gmail.com)
+    ========================================================================== -->
+    <section id="contact" class="py-20 reveal-on-scroll">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          <div class="lg:col-span-5 space-y-5">
+            <span class="text-xs font-mono uppercase tracking-widest text-mint">06 / Pemesanan & Konsultasi</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-crispWhite">Pesan Paket TRIOMA atau Jasa Website</h2>
+            <p class="text-sm text-mutedGray leading-relaxed">
+              Hubungi kami langsung untuk konsultasi pemesanan perangkat <strong class="text-crispWhite">TRIOMA HOME KIT</strong> maupun pembuatan <strong class="text-mint">Website Bisnis / Sekolah / Toko Online</strong> Anda.
+            </p>
+
+            <div class="space-y-3 pt-2">
+              <a href="https://wa.me/6285808760688?text=Halo%20TRIOMA%20HOME%20KIT%2C%20saya%20ingin%20konsultasi%20pemesanan." target="_blank" rel="noopener noreferrer" class="p-4 rounded-2xl liquid-glass liquid-glass-hover flex items-center gap-3.5 block">
+                <i data-lucide="message-circle" class="w-6 h-6 text-emeraldBrand shrink-0"></i>
+                <div>
+                  <span class="text-xs text-mutedGray block">WhatsApp Official (085808760688)</span>
+                  <span class="font-bold text-crispWhite text-base">+62 858-0876-0688</span>
+                </div>
+              </a>
+
+              <a href="mailto:ryedzoffc@gmail.com?subject=Konsultasi%20TRIOMA%20%26%20Jasa%20Website" class="p-4 rounded-2xl liquid-glass liquid-glass-hover flex items-center gap-3.5 block">
+                <i data-lucide="mail" class="w-6 h-6 text-mint shrink-0"></i>
+                <div>
+                  <span class="text-xs text-mutedGray block">Email Resmi</span>
+                  <span class="font-bold text-crispWhite text-base">ryedzoffc@gmail.com</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7">
+            <form onsubmit="submitOrderWhatsApp(event)" class="liquid-glass rounded-3xl p-6 sm:p-8 space-y-5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-mutedGray mb-1.5">Nama Lengkap</label>
+                  <input type="text" id="cust-name" required placeholder="Masukkan nama Anda" class="w-full px-4 py-3 rounded-xl bg-obsidian/85 border border-white/15 focus:border-emeraldBrand focus:outline-none text-sm text-crispWhite">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-mutedGray mb-1.5">Nomor WhatsApp / Email Anda</label>
+                  <input type="text" id="cust-contact" required placeholder="0812xxxx / email@anda.com" class="w-full px-4 py-3 rounded-xl bg-obsidian/85 border border-white/15 focus:border-emeraldBrand focus:outline-none text-sm text-crispWhite">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-mutedGray mb-1.5">Pilih Paket Produk / Layanan Web</label>
+                <select id="cust-package" class="w-full px-4 py-3 rounded-xl bg-obsidian/85 border border-white/15 focus:border-emeraldBrand focus:outline-none text-sm text-crispWhite">
+                  <optgroup label="Paket TRIOMA HOME KIT">
+                    <option value="TRIOMA TERAS — Rp650.000">TRIOMA TERAS — Rp650.000 (Otomatisasi Rumah)</option>
+                    <option value="TRIOMA JAGA — Rp425.000">TRIOMA JAGA — Rp425.000 (Keamanan Rumah)</option>
+                    <option value="TRIOMA HEMAT — Rp650.000">TRIOMA HEMAT — Rp650.000 (Monitoring Energi)</option>
+                    <option value="TRIOMA Cam — Rp175.000">TRIOMA Cam — Rp175.000 (Kamera Pendukung)</option>
+                  </optgroup>
+                  <optgroup label="Paket Jasa Pembuatan Website">
+                    <option value="Paket Website BASIC — Rp250.000 (Personal Portfolio)">Paket Website BASIC — Rp250.000 (Personal Portfolio)</option>
+                    <option value="Paket Website STANDARD — Rp500.000 (Company Profile / School)">Paket Website STANDARD — Rp500.000 (Company Profile / School)</option>
+                    <option value="Paket Website PREMIUM — Rp1.000.000 (E-Commerce / Custom IoT Web)">Paket Website PREMIUM — Rp1.000.000 (E-Commerce / Custom IoT Web)</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-mutedGray mb-1.5">Catatan Tambahan</label>
+                <textarea id="cust-notes" rows="3" placeholder="Tuliskan kebutuhan website atau paket smart home Anda..." class="w-full px-4 py-3 rounded-xl bg-obsidian/85 border border-white/15 focus:border-emeraldBrand focus:outline-none text-sm text-crispWhite"></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button type="submit" class="w-full py-3.5 px-5 rounded-2xl bg-emeraldBrand hover:bg-mint text-obsidian font-extrabold text-xs sm:text-sm shadow-[0_0_24px_rgba(16,185,129,0.4)] transition cursor-pointer inline-flex items-center justify-center gap-2">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  <span>Kirim via WhatsApp</span>
+                </button>
+                <button type="button" onclick="submitOrderEmail()" class="w-full py-3.5 px-5 rounded-2xl bg-white/10 hover:bg-white/15 border border-emeraldBrand/40 text-crispWhite font-bold text-xs sm:text-sm transition cursor-pointer inline-flex items-center justify-center gap-2">
+                  <i data-lucide="mail" class="w-4 h-4 text-mint"></i>
+                  <span>Kirim via Email</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-obsidian border-t border-emeraldBrand/20 py-8 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-mutedGray">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-emeraldBrand"></span>
+        <span class="font-extrabold text-crispWhite">TRIOMA HOME KIT</span>
+        <span>— Smart Home Showcase & Web Business Presentation</span>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-4 font-mono text-[11px]">
+        <a href="https://wa.me/6285808760688" target="_blank" rel="noopener noreferrer" class="text-mint hover:underline">WA: +62 858-0876-0688</a>
+        <span>•</span>
+        <a href="mailto:ryedzoffc@gmail.com" class="text-mint hover:underline">ryedzoffc@gmail.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div id="product-detail-modal" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/80 backdrop-blur-lg p-4">
+    <div class="liquid-glass rounded-3xl max-w-2xl w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto border border-emeraldBrand/50">
+      <button onclick="closeProductDetail()" class="absolute top-5 right-5 p-2 rounded-xl bg-white/10 hover:bg-emeraldBrand hover:text-obsidian text-crispWhite cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div id="product-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. CLASSROOM PRESENTATION MODE OVERLAY (FULLSCREEN + NEXT/PREV + NOTES)
+  ========================================================================== -->
+  <div id="presentation-overlay" class="fixed inset-0 z-[100] hidden flex-col bg-obsidian text-crispWhite">
+    <div class="bg-charcoal border-b border-emeraldBrand/30 px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-lg bg-emeraldBrand text-obsidian font-mono font-extrabold text-xs">PRESENTATION MODE</span>
+        <div>
+          <span id="pres-step-label" class="text-[11px] font-mono text-mint font-bold">SLIDE 01 / 07</span>
+          <h2 id="pres-main-title" class="text-sm sm:text-base font-extrabold text-crispWhite">Pengenalan Konsep</h2>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="toggleFullscreenStage()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-obsidian border border-white/15 hover:border-mint text-xs text-crispWhite cursor-pointer">
+          <i data-lucide="maximize" class="w-4 h-4 text-emeraldBrand"></i>
+          <span>Fullscreen</span>
+        </button>
+        <button onclick="closePresentationMode()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-500/15 hover:bg-red-500 text-red-300 hover:text-white border border-red-500/35 text-xs font-bold transition cursor-pointer">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          <span>Keluar</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full h-1.5 bg-charcoal">
+      <div id="pres-progress" class="h-full bg-gradient-to-r from-emeraldBrand to-mint transition-all duration-300" style="width: 14.28%"></div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 sm:p-8 emerald-mesh-bg">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Speaker Notes PPT -->
+        <div class="lg:col-span-4 liquid-glass rounded-3xl p-6 space-y-4">
+          <span id="pres-tag" class="px-2.5 py-1 rounded-lg bg-emeraldBrand/15 text-mint text-[11px] font-mono font-bold inline-block">MATERI PPT</span>
+          <h3 id="pres-heading" class="text-xl sm:text-2xl font-extrabold text-crispWhite"></h3>
+          <p id="pres-desc" class="text-xs sm:text-sm text-mutedGray leading-relaxed"></p>
+          <div class="p-4 rounded-2xl bg-obsidian/85 border border-emeraldBrand/30">
+            <span class="text-[11px] font-mono text-mint block mb-1.5">CATATAN PEMBICARA DI DEPAN SISWA:</span>
+            <ul id="pres-bullets" class="space-y-1.5 text-xs text-crispWhite/90 list-disc list-inside"></ul>
+          </div>
+        </div>
+
+        <!-- Interactive Stage -->
+        <div id="pres-stage-content" class="lg:col-span-8 liquid-glass rounded-3xl p-6"></div>
+      </div>
+    </div>
+
+    <div class="bg-charcoal border-t border-emeraldBrand/25 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <button onclick="stepPresentation(-1)" id="pres-btn-prev" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-obsidian hover:bg-forest border border-white/15 text-xs sm:text-sm font-bold text-crispWhite disabled:opacity-40 cursor-pointer">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>Previous</span>
+      </button>
+
+      <div id="pres-dots" class="hidden md:flex items-center gap-2"></div>
+
+      <button onclick="stepPresentation(1)" id="pres-btn-next" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emeraldBrand hover:bg-mint text-obsidian text-xs sm:text-sm font-extrabold shadow-lg transition cursor-pointer">
+        <span>Next</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       JAVASCRIPT LOGIC
+  ========================================================================== -->
+  <script>
+    // 1. KATALOG TRIOMA HOME KIT
+    const triomaCatalog = [
+      {
+        id: 'teras',
+        name: 'TRIOMA TERAS',
+        category: 'Otomatisasi Rumah',
+        price: 'Rp650.000',
+        icon: 'lightbulb',
+        shortDesc: 'Otomatisasi pencahayaan dan sakelar rumah pintar berbasis ESP32-S3 Hub.',
+        fullDesc: 'TRIOMA TERAS memungkinkan Anda mengontrol lampu teras, ruang tamu, dan perangkat listrik langsung dari dashboard maupun jadwal otomatis.',
+        specs: [
+          ['Controller', 'ESP32-S3 Dual-Core 240MHz'],
+          ['Konektivitas', 'Wi-Fi 2.4GHz + Dukungan Zigbee'],
+          ['Aktuator', 'Smart Relay 2-Channel (10A)']
+        ],
+        howItWorks: [
+          'Pengguna menekan sakelar pada Dashboard TRIOMA.',
+          'Sinyal dikirim via WebSocket/MQTT ke ESP32-S3 Hub.',
+          'Relay memutus/menghubungkan arus lampu secara instan.'
+        ]
+      },
+      {
+        id: 'jaga',
+        name: 'TRIOMA JAGA',
+        category: 'Keamanan Rumah',
+        price: 'Rp425.000',
+        icon: 'shield-check',
+        shortDesc: 'Sistem keamanan rumah dengan sensor gerak PIR dan sensor pintu terbuka.',
+        fullDesc: 'TRIOMA JAGA memberikan perlindungan 24/7 dengan deteksi gerakan manusia dan pemantauan akses pintu utama secara real-time.',
+        specs: [
+          ['Sensor Gerak', 'PIR Motion Detector (110°)'],
+          ['Sensor Pintu', 'Magnetic Door Contact Switch'],
+          ['Protokol', 'Zigbee Low-Power Mesh']
+        ],
+        howItWorks: [
+          'Sensor pintu/gerak mendeteksi aktivitas mencurigakan.',
+          'Sinyal nirkabel diteruskan ke ESP32-S3 Core Hub.',
+          'Dashboard memberikan peringatan visual dan mencatat log waktu.'
+        ]
+      },
+      {
+        id: 'hemat',
+        name: 'TRIOMA HEMAT',
+        category: 'Monitoring Energi',
+        price: 'Rp650.000',
+        icon: 'gauge',
+        shortDesc: 'Pemantauan daya listrik (Watt) serta suhu dan kelembapan ruangan.',
+        fullDesc: 'TRIOMA HEMAT membantu memantau beban pemakaian listrik secara real-time untuk menghemat biaya tagihan bulanan.',
+        specs: [
+          ['Sensor Arus', 'Split-Core CT Sensor (0-30A)'],
+          ['Sensor Iklim', 'Digital Temperature & Humidity'],
+          ['Output Data', 'Grafik Watt & Circular Gauge']
+        ],
+        howItWorks: [
+          'Sensor arus membaca beban listrik perangkat aktif.',
+          'ESP32-S3 mengirimkan telemetri setiap detik ke dashboard.',
+          'Pengguna dapat memantau lonjakan daya melalui grafik.'
+        ]
+      },
+      {
+        id: 'cam',
+        name: 'TRIOMA Cam',
+        category: 'Produk Pendukung',
+        price: 'Rp175.000',
+        icon: 'video',
+        shortDesc: 'Kamera pemantau HD 1080p Night Vision sebagai pelengkap keamanan.',
+        fullDesc: 'TRIOMA Cam melengkapi ekosistem TRIOMA JAGA untuk memantau kondisi rumah secara visual kapan saja.',
+        specs: [
+          ['Resolusi', 'Full HD 1080p Wide Angle'],
+          ['Night Vision', 'Infrared LED Otomatis'],
+          ['Koneksi', 'Wi-Fi 2.4GHz']
+        ],
+        howItWorks: [
+          'Terhubung ke jaringan Wi-Fi yang sama dengan hub.',
+          'Memberikan pantauan visual saat sensor pintu/gerak aktif.'
+        ]
+      }
+    ];
+
+    function renderProductCards() {
+      const grid = document.getElementById('products-showcase-grid');
+      grid.innerHTML = triomaCatalog.map(p => `
+        <div class="liquid-glass liquid-glass-hover rounded-3xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-2xl bg-emeraldBrand/15 border border-emeraldBrand/35 text-mint flex items-center justify-center">
+                <i data-lucide="${p.icon}" class="w-6 h-6"></i>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-obsidian/80 border border-emeraldBrand/30 text-[10px] font-mono text-mint">READY</span>
+            </div>
+            <span class="text-[11px] font-mono text-mutedGray uppercase">${p.category}</span>
+            <h3 class="text-xl font-extrabold text-crispWhite mt-0.5">${p.name}</h3>
+            <p class="text-2xl font-extrabold font-mono text-emeraldBrand mt-2">${p.price}</p>
+            <p class="text-xs text-mutedGray mt-2 leading-relaxed">${p.shortDesc}</p>
+          </div>
+          <button onclick="openProductDetail('${p.id}')" class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-emeraldBrand text-crispWhite hover:text-obsidian font-bold text-xs transition cursor-pointer">
+            Detail Produk
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openProductDetail(id) {
+      const p = triomaCatalog.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('product-detail-body').innerHTML = `
+        <div class="space-y-5">
+          <div>
+            <span class="text-xs font-mono text-mint uppercase">${p.category}</span>
+            <h3 class="text-2xl font-extrabold text-crispWhite">${p.name} — <span class="text-emeraldBrand font-mono">${p.price}</span></h3>
+            <p class="text-sm text-crispWhite/90 mt-2">${p.fullDesc}</p>
+          </div>
+          <div class="rounded-2xl bg-obsidian/85 border border-white/10 divide-y divide-white/10 text-xs">
+            ${p.specs.map(([k, v]) => `<div class="px-4 py-2.5 flex justify-between"><span class="text-mutedGray">${k}</span><span class="font-mono font-bold text-crispWhite">${v}</span></div>`).join('')}
+          </div>
+          <div>
+            <span class="text-xs font-mono text-mint uppercase block mb-2">Cara Kerja:</span>
+            <div class="space-y-1.5 text-xs">
+              ${p.howItWorks.map((s, i) => `<div class="p-2.5 rounded-xl bg-obsidian/70 border border-white/10"><strong class="text-mint font-mono">0${i+1}.</strong> ${s}</div>`).join('')}
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button onclick="closeProductDetail(); orderWebPackage('${p.name} — ${p.price}')" class="px-5 py-3 rounded-xl bg-emeraldBrand text-obsidian font-extrabold text-xs cursor-pointer">Pesan Paket Ini</button>
+            <a href="#live-demo" onclick="closeProductDetail()" class="px-5 py-3 rounded-xl bg-white/10 text-crispWhite font-bold text-xs">Coba Simulasi</a>
+          </div>
+        </div>
+      `;
+      const m = document.getElementById('product-detail-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeProductDetail() {
+      const m = document.getElementById('product-detail-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    // 2. SMART HOME LIVE DASHBOARD SIMULATION
+    const smartHomeState = {
+      scenario: 'Home',
+      devices: {
+        livingLight: { on: true, watts: 18, name: 'Lampu Ruang Utama' },
+        terraceLight: { on: false, watts: 15, name: 'Lampu Teras Depan' },
+        smartAC: { on: false, watts: 420, name: 'Smart AC Relay' }
+      },
+      baseStandbyWatts: 24,
+      temp: 24.5,
+      humidity: 62,
+      motionDetected: false,
+      doorOpen: false,
+      securityArmed: false,
+      logs: []
+    };
+
+    let energyChartInstance = null;
+    let energyHistoryData = [42, 44, 41, 43, 42, 45, 42, 42];
+
+    function initEnergyChart() {
+      const ctx = document.getElementById('energyMonitorChart');
+      if (!ctx || typeof Chart === 'undefined') return;
+      energyChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['-35s', '-30s', '-25s', '-20s', '-15s', '-10s', '-5s', 'Now'],
+          datasets: [{
+            data: energyHistoryData,
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.16)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#6EE7B7',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#929D98', font: { family: 'JetBrains Mono', size: 10 } } },
+            y: { beginAtZero: true, suggestedMax: 500, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#929D98', font: { family: 'JetBrains Mono', size: 10 } } }
+          }
+        }
+      });
+    }
+
+    function calculateCurrentWatts() {
+      let total = smartHomeState.baseStandbyWatts;
+      Object.values(smartHomeState.devices).forEach(d => { if (d.on) total += d.watts; });
+      return total;
+    }
+
+    function pushEnergySample() {
+      const sample = Math.max(18, calculateCurrentWatts() + (Math.floor(Math.random() * 5) - 2));
+      energyHistoryData.shift();
+      energyHistoryData.push(sample);
+      const el = document.getElementById('live-watt-counter');
+      if (el) el.textContent = `${sample} W`;
+      if (energyChartInstance) {
+        energyChartInstance.data.datasets[0].data = energyHistoryData;
+        energyChartInstance.update('none');
+      }
+    }
+
+    function addTimelineEvent(source, detail, severity = 'normal') {
+      const time = new Date().toTimeString().split(' ')[0];
+      smartHomeState.logs.unshift({ time, source, detail, severity });
+      if (smartHomeState.logs.length > 20) smartHomeState.logs.pop();
+      const feed = document.getElementById('timeline-feed');
+      if (!feed) return;
+      feed.innerHTML = smartHomeState.logs.map(item => {
+        const dot = item.severity === 'alert' ? 'bg-red-500' : item.severity === 'warn' ? 'bg-amber-400' : 'bg-emeraldBrand';
+        return `
+          <div class="p-2.5 rounded-xl bg-obsidian/80 border border-white/10 flex items-start gap-2.5">
+            <span class="w-2 h-2 rounded-full ${dot} mt-1.5 shrink-0"></span>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between text-[11px]">
+                <span class="font-bold text-mint">${item.source}</span>
+                <span class="font-mono text-mutedGray">${item.time}</span>
+              </div>
+              <p class="text-xs text-crispWhite/90 mt-0.5">${item.detail}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearTimelineLogs() {
+      smartHomeState.logs = [];
+      addTimelineEvent('System', 'Activity History dibersihkan.');
+    }
+
+    function toggleDeviceSwitch(key) {
+      const dev = smartHomeState.devices[key];
+      dev.on = !dev.on;
+      addTimelineEvent(dev.name, `Diubah menjadi ${dev.on ? 'ON' : 'OFF'}.`);
+      showToast(`${dev.name}: ${dev.on ? 'ON' : 'OFF'}`, `Beban daya aktif: ${calculateCurrentWatts()}W`);
+      syncDashboardControls();
+      pushEnergySample();
+    }
+
+    function applyScenarioMode(mode) {
+      smartHomeState.scenario = mode;
+      document.querySelectorAll('.scen-btn').forEach(btn => {
+        btn.className = 'scen-btn px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer bg-obsidian/80 text-crispWhite border border-white/10';
+      });
+      const active = document.getElementById(`scen-btn-${mode}`);
+      if (active) active.className = 'scen-btn px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer bg-emeraldBrand text-obsidian';
+
+      const mirror = document.getElementById('hero-mode-mirror');
+      if (mirror) mirror.textContent = mode;
+
+      if (mode === 'Home') {
+        smartHomeState.devices.livingLight.on = true;
+        smartHomeState.devices.terraceLight.on = false;
+        smartHomeState.devices.smartAC.on = false;
+        smartHomeState.securityArmed = false;
+        smartHomeState.doorOpen = false;
+      } else if (mode === 'Away') {
+        smartHomeState.devices.livingLight.on = false;
+        smartHomeState.devices.terraceLight.on = false;
+        smartHomeState.devices.smartAC.on = false;
+        smartHomeState.securityArmed = true;
+        smartHomeState.doorOpen = false;
+      } else if (mode === 'Night') {
+        smartHomeState.devices.livingLight.on = false;
+        smartHomeState.devices.terraceLight.on = true;
+        smartHomeState.devices.smartAC.on = true;
+        smartHomeState.securityArmed = true;
+      } else if (mode === 'Security') {
+        smartHomeState.devices.terraceLight.on = true;
+        smartHomeState.securityArmed = true;
+      }
+
+      addTimelineEvent('Scenario Engine', `Mode diubah ke ${mode} Mode.`);
+      showToast(`${mode} Mode Aktif`, `Profil perangkat untuk ${mode} Mode diterapkan.`);
+      syncDashboardControls();
+      pushEnergySample();
+    }
+
+    function adjustSimulatedTemp(delta) {
+      smartHomeState.temp = Math.max(16, Math.min(36, +(smartHomeState.temp + delta).toFixed(1)));
+      smartHomeState.humidity = Math.max(38, Math.min(86, Math.round(92 - smartHomeState.temp * 1.2)));
+      addTimelineEvent('TRIOMA HEMAT', `Suhu: ${smartHomeState.temp}°C • Kelembapan: ${smartHomeState.humidity}%`);
+      syncDashboardControls();
+    }
+
+    function simulateMotionTrigger() {
+      smartHomeState.motionDetected = true;
+      const alert = smartHomeState.securityArmed;
+      addTimelineEvent('Motion Sensor', alert ? `PERINGATAN! Gerakan terdeteksi saat ${smartHomeState.scenario} Mode!` : 'Gerakan terdeteksi di ruang utama.', alert ? 'alert' : 'warn');
+      showToast(alert ? 'ALERT: Gerakan Terdeteksi!' : 'Motion Sensor Aktif', 'Sensor PIR mendeteksi pergerakan.', alert ? 'alert' : 'info');
+      syncDashboardControls();
+      setTimeout(() => { smartHomeState.motionDetected = false; syncDashboardControls(); }, 3200);
+    }
+
+    function toggleSimulatedDoor() {
+      smartHomeState.doorOpen = !smartHomeState.doorOpen;
+      const alert = smartHomeState.doorOpen && smartHomeState.securityArmed;
+      addTimelineEvent('Door Sensor', smartHomeState.doorOpen ? (alert ? `PERINGATAN! Pintu dibuka saat ${smartHomeState.scenario} Mode!` : 'Pintu utama dibuka.') : 'Pintu utama dikunci kembali.', alert ? 'alert' : 'normal');
+      if (alert) showToast('ALERT: Pintu Terbuka!', `Pintu dibuka saat ${smartHomeState.scenario} Mode aktif!`, 'alert');
+      syncDashboardControls();
+    }
+
+    function triggerHubPing() {
+      addTimelineEvent('ESP32-S3 Hub', 'Ping Zigbee Mesh berhasil (Latency 11ms, 4 Node aktif).');
+      showToast('ESP32-S3 + Zigbee Online', 'Semua node sensor & aktuator merespons dalam 11ms.');
+    }
+
+    function syncDashboardControls() {
+      let count = 0;
+      Object.entries(smartHomeState.devices).forEach(([k, dev]) => {
+        if (dev.on) count++;
+        document.getElementById(`toggle-${k}`)?.classList.toggle('active', dev.on);
+        const st = document.getElementById(`status-${k}`);
+        if (st) {
+          st.textContent = dev.on ? `ON • ${dev.watts}W` : 'OFF • 0W Standby';
+          st.className = dev.on ? 'text-xs font-mono text-mint' : 'text-xs font-mono text-mutedGray';
+        }
+      });
+      const pill = document.getElementById('active-devices-pill');
+      if (pill) pill.textContent = `${count} / 3 ON`;
+
+      const tempEl = document.getElementById('temp-value-text');
+      const tempArc = document.getElementById('temp-gauge-arc');
+      if (tempEl && tempArc) {
+        tempEl.textContent = `${smartHomeState.temp.toFixed(1)}°`;
+        tempArc.style.strokeDashoffset = 251.2 * (1 - ((smartHomeState.temp - 16) / 20));
+      }
+
+      const humEl = document.getElementById('humidity-value-text');
+      const humArc = document.getElementById('humidity-ring-arc');
+      if (humEl && humArc) {
+        humEl.textContent = `${smartHomeState.humidity}%`;
+        humArc.style.strokeDashoffset = 251.2 * (1 - smartHomeState.humidity / 100);
+      }
+
+      const mCard = document.getElementById('motion-sensor-card');
+      const mBadge = document.getElementById('motion-badge');
+      const mDesc = document.getElementById('motion-desc');
+      if (mCard && mBadge && mDesc) {
+        mBadge.textContent = smartHomeState.motionDetected ? 'DETECTED' : 'CLEAR';
+        mDesc.textContent = smartHomeState.motionDetected ? 'Gerakan manusia terdeteksi!' : 'Tidak ada gerakan terdeteksi.';
+        mCard.classList.toggle('security-alert-pulse', smartHomeState.motionDetected && smartHomeState.securityArmed);
+      }
+
+      const dCard = document.getElementById('door-sensor-card');
+      const dBadge = document.getElementById('door-badge');
+      const dDesc = document.getElementById('door-desc');
+      const dBtn = document.getElementById('door-sim-btn');
+      if (dCard && dBadge && dDesc && dBtn) {
+        dBadge.textContent = smartHomeState.doorOpen ? 'OPEN' : 'LOCKED';
+        dDesc.textContent = smartHomeState.doorOpen ? 'Pintu utama TERBUKA.' : 'Pintu utama terkunci aman.';
+        dBtn.textContent = smartHomeState.doorOpen ? 'Simulasi Tutup Pintu' : 'Simulasi Pintu Terbuka';
+        dCard.classList.toggle('security-alert-pulse', smartHomeState.doorOpen && smartHomeState.securityArmed);
+      }
+    }
+
+    // 3. JENIS WEBSITE EXPLORER
+    const webTypesInfo = {
+      portfolio: {
+        title: '01. Personal Portfolio — Cocok dengan Paket Basic (Rp250.000)',
+        desc: 'Website personal branding untuk mahasiswa, desainer, programmer, fotografer, atau kreator konten guna menampilkan CV interaktif dan hasil proyek terbaik.'
+      },
+      company: {
+        title: '02. Company Profile — Cocok dengan Paket Standard (Rp500.000)',
+        desc: 'Website resmi perusahaan atau UMKM yang berisi profil usaha, daftar layanan, legalitas, testimoni klien, dan tombol konsultasi langsung ke WhatsApp.'
+      },
+      school: {
+        title: '03. School Website — Cocok dengan Paket Standard (Rp500.000)',
+        desc: 'Portal informasi sekolah modern lengkap dengan profil jurusan, pengumuman PPDB online, galeri prestasi siswa, dan agenda akademik.'
+      },
+      ecommerce: {
+        title: '04. E-Commerce Store — Cocok dengan Paket Premium (Rp1.000.000)',
+        desc: 'Website toko online lengkap dengan filter kategori produk, keranjang belanja otomatis, perhitungan total harga, dan integrasi checkout cepat.'
+      },
+      iot: {
+        title: '05. Custom Smart Home / IoT Web App — Cocok dengan Paket Premium (Rp1.000.000)',
+        desc: 'Aplikasi web interaktif tingkat lanjut seperti platform TRIOMA HOME KIT ini yang memadukan katalog produk, simulasi perangkat keras ESP32-S3, grafik real-time, dan kalkulator bisnis.'
+      }
+    };
+
+    function highlightWebType(key) {
+      const info = webTypesInfo[key];
+      if (!info) return;
+      document.getElementById('wtype-detail-title').textContent = info.title;
+      document.getElementById('wtype-detail-desc').textContent = info.desc;
+    }
+
+    // 4. MARKETING MIX 4P & SIMULASI PENDAPATAN
+    const p4Content = {
+      product: {
+        title: '01. PRODUCT — Produk Website & Ekosistem TRIOMA',
+        desc: 'Kami menjual 5 kategori website (Personal Portfolio, Company Profile, School Website, E-Commerce, dan Custom Smart Home/IoT Web). Website TRIOMA HOME KIT ini dipresentasikan langsung sebagai demonstrasi kualitas produk.'
+      },
+      price: {
+        title: '02. PRICE — Strategi Harga Bertingkat (Tiered Pricing)',
+        desc: 'Menawarkan 3 pilihan paket harga yang transparan sesuai jenis website: Basic Rp250.000 (Portfolio), Standard Rp500.000 (Company Profile / Sekolah), dan Premium Rp1.000.000 (E-Commerce / Custom Smart Web).'
+      },
+      place: {
+        title: '03. PLACE — Saluran Distribusi Digital',
+        desc: 'Pemasaran dan pemesanan dilakukan melalui Website Resmi TRIOMA, WhatsApp Business (085808760688), Email (ryedzoffc@gmail.com), serta media sosial Instagram, TikTok, dan Facebook.'
+      },
+      promotion: {
+        title: '04. PROMOTION — Demonstrasi Langsung & Konten Edukatif',
+        desc: 'Menarik minat calon klien dengan memperlihatkan simulasi langsung dashboard interaktif TRIOMA, video demo fitur, poster promosi, diskon bundling, dan portofolio nyata.'
+      }
+    };
+
+    function select4PCard(key) {
+      const info = p4Content[key];
+      document.querySelectorAll('.p4-card').forEach(c => {
+        c.className = 'p4-card liquid-glass rounded-3xl p-6 text-left border border-white/15 hover:border-mint cursor-pointer';
+      });
+      const active = document.getElementById(`card-4p-${key}`);
+      if (active) active.className = 'p4-card liquid-glass rounded-3xl p-6 text-left border-2 border-emeraldBrand bg-forest/40 cursor-pointer';
+
+      document.getElementById('p4-detail-panel').innerHTML = `
+        <h4 class="text-lg font-extrabold text-mint">${info.title}</h4>
+        <p class="text-xs sm:text-sm text-crispWhite/90 mt-1.5 leading-relaxed">${info.desc}</p>
+      `;
+    }
+
+    function formatRupiah(num) {
+      return 'Rp' + num.toLocaleString('id-ID');
+    }
+
+    function changeQty(tier, delta) {
+      const input = document.getElementById(`qty-${tier}`);
+      const next = Math.max(0, (parseInt(input.value) || 0) + delta);
+      input.value = next;
+      recalcRevenue();
+    }
+
+    function recalcRevenue() {
+      const qBasic = Math.max(0, parseInt(document.getElementById('qty-basic').value) || 0);
+      const qStd = Math.max(0, parseInt(document.getElementById('qty-standard').value) || 0);
+      const qPrem = Math.max(0, parseInt(document.getElementById('qty-premium').value) || 0);
+
+      const subBasic = qBasic * 250000;
+      const subStd = qStd * 500000;
+      const subPrem = qPrem * 1000000;
+      const totalOrders = qBasic + qStd + qPrem;
+      const totalRev = subBasic + subStd + subPrem;
+
+      document.getElementById('sub-basic').textContent = formatRupiah(subBasic);
+      document.getElementById('sub-standard').textContent = formatRupiah(subStd);
+      document.getElementById('sub-premium').textContent = formatRupiah(subPrem);
+      document.getElementById('total-orders-count').textContent = `${totalOrders} Website`;
+      document.getElementById('total-revenue-display').textContent = formatRupiah(totalRev);
+    }
+
+    function resetRevenueCalc() {
+      document.getElementById('qty-basic').value = 4;
+      document.getElementById('qty-standard').value = 3;
+      document.getElementById('qty-premium').value = 1;
+      recalcRevenue();
+    }
+
+    // 5. CLASSROOM PRESENTATION MODE
+    let presIndex = 0;
+    const presentationSteps = [
+      {
+        num: '01',
+        title: 'Pengenalan TRIOMA & Bisnis Digital Web',
+        tag: 'OPENING',
+        heading: 'Produk Nyata: Smart Home & Jasa Website',
+        desc: 'Memperkenalkan bagaimana satu ide teknologi dapat diwujudkan menjadi produk smart home TRIOMA sekaligus produk jasa pembuatan website profesional.',
+        bullets: [
+          'Website ini adalah contoh nyata produk yang kami buat dan pasarkan.',
+          'Mengusung desain futuristik Liquid Glass & Dark Emerald.',
+          'Menggabungkan showcase produk IoT TRIOMA dengan katalog layanan web.'
+        ],
+        stage: () => `
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-forest to-obsidian border border-emeraldBrand/40 space-y-4">
+            <span class="text-xs font-mono text-mint">SMARTER LIVING. SIMPLER FUTURE.</span>
+            <h4 class="text-2xl sm:text-3xl font-extrabold text-crispWhite">TRIOMA HOME KIT & Web Business</h4>
+            <p class="text-sm text-mutedGray">Satu platform presentasi yang menunjukkan produk fisik/IoT sekaligus model bisnis pembuatan website.</p>
+          </div>
+        `
+      },
+      {
+        num: '02',
+        title: 'Produk Unggulan: TRIOMA Home Kit',
+        tag: 'SMART HOME SHOWCASE',
+        heading: 'Satu Jaringan, Tiga Fungsi',
+        desc: 'Menjelaskan jajaran produk TRIOMA berbasis ESP32-S3, Wi-Fi, dan modul radio Zigbee.',
+        bullets: [
+          'TRIOMA TERAS (Rp650.000) — Otomatisasi lampu & perangkat rumah.',
+          'TRIOMA JAGA (Rp425.000) — Sensor gerak PIR & sensor pintu.',
+          'TRIOMA HEMAT (Rp650.000) — Monitoring daya listrik & suhu.',
+          'TRIOMA Cam (Rp175.000) — Kamera pendukung keamanan.'
+        ],
+        stage: () => `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            ${triomaCatalog.map(p => `
+              <div class="p-4 rounded-2xl bg-obsidian/85 border border-white/15">
+                <span class="text-[10px] font-mono text-mint">${p.category}</span>
+                <h5 class="font-extrabold text-crispWhite text-base">${p.name} — <span class="text-emeraldBrand font-mono">${p.price}</span></h5>
+                <p class="text-xs text-mutedGray mt-1">${p.shortDesc}</p>
+              </div>
+            `).join('')}
+          </div>
+        `
+      },
+      {
+        num: '03',
+        title: 'Demo Langsung Smart Home Dashboard',
+        tag: 'LIVE SIMULATION',
+        heading: 'Kontrol Lampu & Sensor Secara Langsung',
+        desc: 'Demonstrasikan langsung kepada siswa bagaimana dashboard TRIOMA merespons perintah tombol dan sensor secara simulasi.',
+        bullets: [
+          'Tekan tombol lampu ON/OFF dan lihat perubahan status.',
+          'Simulasikan sensor gerak atau pintu terbuka.',
+          'Periksa catatan kejadian secara real-time.'
+        ],
+        stage: () => `
+          <div class="space-y-4">
+            <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-400/40 text-amber-300 text-xs font-mono">
+              SIMULATION MODE • Klik tombol di bawah untuk demonstrasi langsung:
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button onclick="toggleDeviceSwitch('livingLight'); renderPresStage();" class="p-4 rounded-2xl bg-obsidian border border-emeraldBrand/40 text-left cursor-pointer">
+                <span class="text-[10px] font-mono text-mint block">SMART SWITCH</span>
+                <strong class="text-base text-crispWhite block mt-1">Lampu: ${smartHomeState.devices.livingLight.on ? 'ON' : 'OFF'}</strong>
+              </button>
+              <button onclick="simulateMotionTrigger(); renderPresStage();" class="p-4 rounded-2xl bg-obsidian border border-emeraldBrand/40 text-left cursor-pointer">
+                <span class="text-[10px] font-mono text-mint block">MOTION SENSOR</span>
+                <strong class="text-base text-crispWhite block mt-1">${smartHomeState.motionDetected ? 'DETECTED!' : 'Standby'}</strong>
+              </button>
+              <button onclick="toggleSimulatedDoor(); renderPresStage();" class="p-4 rounded-2xl bg-obsidian border border-emeraldBrand/40 text-left cursor-pointer">
+                <span class="text-[10px] font-mono text-mint block">DOOR SENSOR</span>
+                <strong class="text-base text-crispWhite block mt-1">${smartHomeState.doorOpen ? 'OPEN' : 'LOCKED'}</strong>
+              </button>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '04',
+        title: '5 Jenis Website yang Dijual',
+        tag: 'WEB PRODUCTS',
+        heading: 'Jenis Website Sesuai Kebutuhan Pasar',
+        desc: 'Menjelaskan ragam produk website yang ditawarkan kepada individu, sekolah, UMKM, hingga perusahaan.',
+        bullets: [
+          '1. Personal Portfolio — Profil & karya pribadi.',
+          '2. Company Profile — Profil usaha & layanan jasa.',
+          '3. School Website — Portal profil & PPDB sekolah.',
+          '4. E-Commerce — Toko online & keranjang belanja.',
+          '5. Custom Smart Home / IoT Web — Seperti website TRIOMA ini.'
+        ],
+        stage: () => `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-obsidian/85 border border-white/10"><strong class="text-mint">01. Personal Portfolio:</strong> CV digital & galeri karya.</div>
+            <div class="p-3.5 rounded-xl bg-obsidian/85 border border-white/10"><strong class="text-mint">02. Company Profile:</strong> Profil bisnis & kontak WhatsApp.</div>
+            <div class="p-3.5 rounded-xl bg-obsidian/85 border border-white/10"><strong class="text-mint">03. School Website:</strong> Info sekolah, berita & PPDB.</div>
+            <div class="p-3.5 rounded-xl bg-obsidian/85 border border-white/10"><strong class="text-mint">04. E-Commerce:</strong> Katalog produk & checkout belanja.</div>
+            <div class="p-3.5 rounded-xl bg-forest/70 border border-emeraldBrand sm:col-span-2"><strong class="text-mint">05. Custom Smart Home / IoT Web App:</strong> Contoh nyata adalah website TRIOMA ini.</div>
+          </div>
+        `
+      },
+      {
+        num: '05',
+        title: 'Paket Harga Web Sesuai Jenisnya',
+        tag: 'PRICING STRATEGY',
+        heading: 'Basic Rp250rb • Standard Rp500rb • Premium Rp1jt',
+        desc: 'Strategi penetapan harga berdasarkan kompleksitas fitur dan jenis website yang dipesan klien.',
+        bullets: [
+          'Paket Basic (Rp250.000): Personal Portfolio & Landing Page.',
+          'Paket Standard (Rp500.000): Company Profile & School Website.',
+          'Paket Premium (Rp1.000.000): E-Commerce & Custom Smart Web.'
+        ],
+        stage: () => `
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-4 rounded-2xl bg-obsidian/85 border border-white/15">
+              <span class="text-xs font-mono text-mint">BASIC</span>
+              <h4 class="text-2xl font-extrabold font-mono text-crispWhite mt-1">Rp250.000</h4>
+              <p class="text-xs text-mutedGray mt-2">Personal Portfolio (1–3 Halaman)</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-forest/70 border-2 border-emeraldBrand">
+              <span class="text-xs font-mono text-mint">STANDARD</span>
+              <h4 class="text-2xl font-extrabold font-mono text-crispWhite mt-1">Rp500.000</h4>
+              <p class="text-xs text-crispWhite/85 mt-2">Company Profile & School Website</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-obsidian/85 border border-white/15">
+              <span class="text-xs font-mono text-mint">PREMIUM</span>
+              <h4 class="text-2xl font-extrabold font-mono text-crispWhite mt-1">Rp1.000.000</h4>
+              <p class="text-xs text-mutedGray mt-2">E-Commerce & Custom IoT Web</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '06',
+        title: 'Marketing Mix 4P & Simulasi Pendapatan',
+        tag: 'MARKETING & FINANCE',
+        heading: 'Penerapan 4P & Proyeksi Omzet Penjualan',
+        desc: 'Menghitung potensi pendapatan dari kombinasi pesanan paket Basic, Standard, dan Premium.',
+        bullets: [
+          'Contoh target: 4 Basic + 3 Standard + 1 Premium = Rp3.500.000.',
+          'Promosi dilakukan dengan menunjukkan live demo website TRIOMA.',
+          'Distribusi melalui Website, WhatsApp 085808760688, IG & TikTok.'
+        ],
+        stage: () => `
+          <div class="p-5 rounded-2xl bg-obsidian/85 border border-emeraldBrand/40 space-y-3 text-xs">
+            <div class="flex justify-between py-2 border-b border-white/10"><span>4x Paket Basic (@Rp250.000)</span><strong class="font-mono text-crispWhite">Rp1.000.000</strong></div>
+            <div class="flex justify-between py-2 border-b border-white/10"><span>3x Paket Standard (@Rp500.000)</span><strong class="font-mono text-crispWhite">Rp1.500.000</strong></div>
+            <div class="flex justify-between py-2 border-b border-white/10"><span>1x Paket Premium (@Rp1.000.000)</span><strong class="font-mono text-crispWhite">Rp1.000.000</strong></div>
+            <div class="flex justify-between pt-2 text-base font-extrabold text-emeraldBrand"><span>TOTAL PENDAPATAN (8 PESANAN)</span><span class="font-mono">Rp3.500.000</span></div>
+          </div>
+        `
+      },
+      {
+        num: '07',
+        title: 'Kontak Pemesanan & Evaluasi Siswa',
+        tag: 'CLOSING & Q&A',
+        heading: 'Siap Melayani Konsultasi & Pemesanan',
+        desc: 'Gunakan kontak resmi di bawah ini untuk pemesanan paket TRIOMA maupun jasa pembuatan website.',
+        bullets: [
+          'WhatsApp Official: +62 858-0876-0688 (085808760688).',
+          'Email Resmi: ryedzoffc@gmail.com.',
+          'Ajak siswa berdiskusi menentukan paket terbaik untuk studi kasus toko online.'
+        ],
+        stage: () => `
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-forest to-obsidian border border-emeraldBrand/40 space-y-3">
+            <h4 class="text-xl font-extrabold text-crispWhite">Kontak Resmi TRIOMA & Jasa Website</h4>
+            <p class="text-sm font-mono text-mint">WhatsApp: +62 858-0876-0688</p>
+            <p class="text-sm font-mono text-mint">Email: ryedzoffc@gmail.com</p>
+            <p class="text-xs text-mutedGray pt-2">Klik "Keluar" di pojok kanan atas untuk kembali mencoba kalkulator pendapatan dan dashboard secara penuh.</p>
+          </div>
+        `
+      }
+    ];
+
+    function openPresentationMode(index = 0) {
+      presIndex = index;
+      const overlay = document.getElementById('presentation-overlay');
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      renderPresStage();
+    }
+
+    function closePresentationMode() {
+      const overlay = document.getElementById('presentation-overlay');
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    function stepPresentation(delta) {
+      const next = presIndex + delta;
+      if (next >= 0 && next < presentationSteps.length) {
+        presIndex = next;
+        renderPresStage();
+      } else if (next >= presentationSteps.length) {
+        closePresentationMode();
+      }
+    }
+
+    function renderPresStage() {
+      const item = presentationSteps[presIndex];
+      document.getElementById('pres-step-label').textContent = `SLIDE ${item.num} / 07`;
+      document.getElementById('pres-main-title').textContent = item.title;
+      document.getElementById('pres-tag').textContent = item.tag;
+      document.getElementById('pres-heading').textContent = item.heading;
+      document.getElementById('pres-desc').textContent = item.desc;
+      document.getElementById('pres-bullets').innerHTML = item.bullets.map(b => `<li>${b}</li>`).join('');
+      document.getElementById('pres-stage-content').innerHTML = item.stage();
+      document.getElementById('pres-progress').style.width = `${((presIndex + 1) / presentationSteps.length) * 100}%`;
+      document.getElementById('pres-btn-prev').disabled = presIndex === 0;
+      document.getElementById('pres-btn-next').innerHTML = presIndex === presentationSteps.length - 1
+        ? `<span>Selesai</span><i data-lucide="check" class="w-4 h-4"></i>`
+        : `<span>Next</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+
+      const dots = document.getElementById('pres-dots');
+      if (dots) {
+        dots.innerHTML = presentationSteps.map((s, idx) => `
+          <button onclick="openPresentationMode(${idx})" class="w-7 h-7 rounded-lg font-mono text-xs font-bold cursor-pointer ${idx === presIndex ? 'bg-emeraldBrand text-obsidian' : 'bg-obsidian text-mutedGray border border-white/10'}">${s.num}</button>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleFullscreenStage() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // 6. ORDER & CONTACT HANDLERS (085808760688 & ryedzoffc@gmail.com)
+    function orderWebPackage(pkgLabel) {
+      const sel = document.getElementById('cust-package');
+      if (sel) {
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value === pkgLabel) {
+            sel.selectedIndex = i;
+            break;
+          }
+        }
+      }
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+      showToast('Paket Dipilih', `${pkgLabel} siap dipesan.`);
+    }
+
+    function submitOrderWhatsApp(e) {
+      e.preventDefault();
+      const name = document.getElementById('cust-name').value.trim();
+      const contact = document.getElementById('cust-contact').value.trim();
+      const pkg = document.getElementById('cust-package').value;
+      const notes = document.getElementById('cust-notes').value.trim();
+
+      const text = [
+        `Halo TRIOMA HOME KIT, saya ingin konsultasi & pemesanan:`,
+        `• Nama: ${name}`,
+        `• Kontak: ${contact}`,
+        `• Pilihan Paket: ${pkg}`,
+        notes ? `• Catatan: ${notes}` : ''
+      ].filter(Boolean).join('\n');
+
+      window.open(`https://wa.me/6285808760688?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+      showToast('Membuka WhatsApp...', 'Mengarahkan pesanan ke +62 858-0876-0688.');
+    }
+
+    function submitOrderEmail() {
+      const name = document.getElementById('cust-name').value.trim() || 'Calon Pelanggan';
+      const contact = document.getElementById('cust-contact').value.trim() || '-';
+      const pkg = document.getElementById('cust-package').value;
+      const notes = document.getElementById('cust-notes').value.trim() || '-';
+
+      const subject = `Pemesanan & Konsultasi: ${pkg} — ${name}`;
+      const body = `Halo Tim TRIOMA HOME KIT,\n\nNama: ${name}\nKontak: ${contact}\nPilihan Paket: ${pkg}\nCatatan: ${notes}\n\nTerima kasih.`;
+      window.location.href = `mailto:ryedzoffc@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      showToast('Membuka Email...', 'Menyiapkan pesan ke ryedzoffc@gmail.com.');
+    }
+
+    function toggleMobileDrawer() {
+      document.getElementById('mobile-drawer').classList.toggle('hidden');
+    }
+
+    function showToast(title, message, type = 'info') {
+      const stack = document.getElementById('toast-stack');
+      const toast = document.createElement('div');
+      const border = type === 'alert' ? 'border-red-500 bg-red-950/95' : 'border-emeraldBrand/50 bg-charcoal/95';
+      toast.className = `pointer-events-auto p-3.5 rounded-2xl border ${border} backdrop-blur-xl shadow-2xl`;
+      toast.innerHTML = `<h5 class="text-xs font-extrabold text-mint">${title}</h5><p class="text-[11px] text-crispWhite/90 mt-0.5">${message}</p>`;
+      stack.appendChild(toast);
+      setTimeout(() => toast.remove(), 3800);
+    }
+
+    // Ambient Particles & Scroll Reveal
+    function initParticlesAndReveal() {
+      const canvas = document.getElementById('particle-canvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+        const pts = Array.from({ length: 24 }, () => ({
+          x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.8 + 0.6,
+          vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25
+        }));
+        (function loop() {
+          ctx.clearRect(0, 0, w, h);
+          pts.forEach(p => {
+            p.x = (p.x + p.vx + w) % w;
+            p.y = (p.y + p.vy + h) % h;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(110, 231, 183, 0.35)';
+            ctx.fill();
+          });
+          requestAnimationFrame(loop);
+        })();
+      }
+
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('revealed'); });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal-on-scroll').forEach(el => obs.observe(el));
+    }
+
+    document.addEventListener('keydown', e => {
+      const ov = document.getElementById('presentation-overlay');
+      if (ov && !ov.classList.contains('hidden')) {
+        if (e.key === 'ArrowRight') stepPresentation(1);
+        if (e.key === 'ArrowLeft') stepPresentation(-1);
+        if (e.key === 'Escape') closePresentationMode();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderProductCards();
+      select4PCard('product');
+      initEnergyChart();
+      addTimelineEvent('ESP32-S3 Hub', 'Dashboard TRIOMA siap digunakan (SIMULATION MODE).');
+      syncDashboardControls();
+      recalcRevenue();
+      initParticlesAndReveal();
+      lucide.createIcons();
+      setInterval(pushEnergySample, 2500);
+    });
+  </script>
+</body>
+</html>
+```
